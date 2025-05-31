@@ -1,14 +1,30 @@
 class Base:
-    def __init__(self):
+    def __init__(self, mode='classic'):
         self._base = [['0', '0', '0'],
                       ['0', '0', '0'],
                       ['0', '0', '0']]
+        self._mode = mode
+        self.recent_moves: list[tuple[int, int]] = list()
+    
+    def update_recent_moves(self, x, y):
+        self.recent_moves.append((x, y))
+        moves = len(self.recent_moves)
+        if moves > 6:
+            x, y = self.recent_moves.pop(0)
+            self._base[y][x] = '0'
+            moves -= 1
+        if moves > 5:
+            x, y = self.recent_moves[0]
+            self._base[y][x] = self._base[y][x].lower()
+
 
     def put(self, x, y, player):
         if 0 <= x <= 2 and 0 <= y <= 2:
-            if self._base[y][x] == 'X' or self._base[y][x] == 'O':
+            if self._base[y][x] in ['X', 'O', 'x', 'o']:
                 return False
             self._base[y][x] = player
+            if self._mode == "advanced":
+                self.update_recent_moves(x, y)
             return True
         return False
 
